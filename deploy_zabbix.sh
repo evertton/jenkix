@@ -19,7 +19,7 @@ usage() {
     exit 1
 }
 
-while getopts ":cfitz:hjpu" OPTION; do
+while getopts "hc:f:i:t:z:j:p:u:" OPTION; do
     case ${OPTION} in
 	c)
 	    CACHE_DIR="${OPTARG}"
@@ -66,14 +66,14 @@ cp -rpv "${SOURCE_DIR}/jenkix/jenkix.sh"            "${SCRIPT_DIR}/jenkix.sh"
 
 # Provisioning script configuration
 SCRIPT_CFG="${SCRIPT_DIR}/jenkix.conf"
-cp -rpv "${SOURCE_DIR}/jenkix/jenkix.conf.example"  "${SCRIPT_CFG}.new"
+cp -rpv "${SOURCE_DIR}/jenkix/jenkix.conf.example" "${SCRIPT_CFG}.new"
 regex_cfg[0]="s|JENKINS_URL=.*|JENKINS_URL=\"${JENKINS_URL}\"|g"
 regex_cfg[1]="s|JENKINS_USER=.*|JENKINS_USER=\"${JENKINS_USER}\"|g"
 regex_cfg[2]="s|JENKINS_PASS=.*|JENKINS_PASS=\"${JENKINS_PASS}\"|g"
 regex_cfg[3]="s|CACHE_DIR=.*|CACHE_DIR=\"${CACHE_DIR}\"|g"
 regex_cfg[4]="s|CACHE_TTL=.*|CACHE_TTL=\"${CACHE_TTL}\"|g"
 for index in ${!regex_cfg[*]}; do
-    sed -i '' -e "${regex_cfg[${index}]}" "${SCRIPT_CFG}.new"
+    sed -i -e "${regex_cfg[${index}]}" "${SCRIPT_CFG}.new"
 done
 if [[ -f "${SCRIPT_CFG}" ]]; then
     state=$(cmp --silent "${SCRIPT_CFG}" "${SCRIPT_CFG}.new")
@@ -89,7 +89,7 @@ SCRIPT_ZBX="${ZABBIX_INC}/jenkix.conf"
 cp -rpv "${SOURCE_DIR}/jenkix/zabbix_agentd.conf"   "${SCRIPT_ZBX}.new"
 regex_inc[0]="s|{PREFIX}|${SCRIPT_DIR}|g"
 for index in ${!regex_inc[*]}; do
-    sed -i '' -e "${regex_inc[${index}]}" "${SCRIPT_ZBX}.new"
+    sed -i -e "${regex_inc[${index}]}" "${SCRIPT_ZBX}.new"
 done
 if [[ -f "${SCRIPT_ZBX}" ]]; then
     state=$(cmp --silent "${SCRIPT_ZBX}" "${SCRIPT_ZBX}.new")
